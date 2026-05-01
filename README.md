@@ -1,6 +1,3 @@
-Copy everything below into your `README.md` file at the root of `unisphere-backend/`.
-
----
 
 ```markdown
 # 🌐 UniSphere Backend
