@@ -1,425 +1,391 @@
-# UniSphere Backend API
-
-A robust Node.js/Express backend for the Flutter UniSphere mobile application. This API provides comprehensive campus management features including authentication, user profiles, courses, schedules, news, events, and notifications.
-
-## 🚀 Features
-
-- **Authentication** - User registration, login, JWT token management
-- **User Management** - Profile updates, password changes, user preferences
-- **Course Management** - Browse courses, enrollment, course details
-- **Schedule Management** - Class schedules, timetables
-- **News & Events** - Campus news and event management
-- **Notifications** - Real-time notification system
-- **Security** - Password hashing with bcryptjs, JWT authentication
-- **Database** - MongoDB with Mongoose ODM
-- **CORS** - Cross-origin resource sharing enabled for mobile clients
+Copy everything below into your `README.md` file at the root of `unisphere-backend/`.
 
 ---
 
-## 📋 Prerequisites
+```markdown
+# 🌐 UniSphere Backend
 
-- **Node.js** v14 or higher
-- **npm** or yarn package manager
-- **MongoDB** (local or cloud-based like MongoDB Atlas)
-- **Git** for version control
+A production-ready RESTful API for the **UniSphere** campus mobile app, built with **Node.js**, **Express**, **MongoDB**, and **JWT authentication**.
+
+This backend powers the Flutter frontend with 33 API endpoints covering authentication, user profiles, courses, scheduling, news, events, and notifications.
 
 ---
 
-## 🔧 Installation
+## 🧱 Tech Stack
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/unisphere-backend.git
-cd unisphere-backend
-```
-
-### 2. Install dependencies
-```bash
-npm install
-```
-
-### 3. Configure environment variables
-Create a `.env` file in the root directory:
-```env
-# Server
-NODE_ENV=development
-PORT=5001
-
-# MongoDB
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/unisphere?retryWrites=true&w=majority
-
-# JWT
-JWT_SECRET=your_super_secret_jwt_key_here_minimum_32_characters
-JWT_EXPIRE=7d
-
-# CORS
-CLIENT_URL=http://localhost:3000
-```
-
-### 4. Start the server
-
-**Development mode** (with auto-reload):
-```bash
-npm run dev
-```
-
-**Production mode**:
-```bash
-npm start
-```
-
-Server will run at `http://localhost:5001`
+| Layer        | Technology                      |
+| ------------ | ------------------------------- |
+| Runtime      | Node.js                         |
+| Framework    | Express.js                      |
+| Database     | MongoDB + Mongoose              |
+| Auth         | JWT (jsonwebtoken) + bcryptjs   |
+| Validation   | express-validator               |
+| Environment  | dotenv                          |
+| CORS         | cors                            |
+| Admin UI     | HTML, CSS, JavaScript (admin/index.html) |
 
 ---
 
 ## 📁 Project Structure
 
+	admin/
+		index.html                ← Admin dashboard (see below)
 ```
+---
+
+## 🛠️ Admin Dashboard (`admin/index.html`)
+
+The project includes a modern, responsive **Admin Dashboard** for managing campus data and sending notifications.
+
+**Features:**
+- Secure login for admin users
+- Dashboard with stats (events, news, notifications, users)
+- Send push notifications to all users, students, or teachers
+- Create and manage events and news
+- View recent events/news in a card grid
+- Light/dark mode toggle
+- Responsive design for mobile/desktop
+
+**How it works:**
+- The dashboard interacts with backend API endpoints for authentication, notifications, events, and news
+- Uses JWT authentication (admin credentials required)
+- All actions (create, send, list) are performed via REST API calls
+
+**To use:**
+1. Open `admin/index.html` in your browser
+2. Log in with an admin account (use any credentials for demo mode)
+3. Use the dashboard to manage campus content and send notifications
+
+---
+
 unisphere-backend/
+
+├── server.js                        ← Entry point
+
+├── .env                             ← Environment variables
+
+├── .gitignore
+
+├── package.json
+
 ├── config/
-│   └── db.js                 # MongoDB connection configuration
-├── controllers/
-│   ├── authController.js     # Authentication logic
-│   ├── userController.js     # User management logic
-│   └── courseController.js   # Course management logic
+
+│   └── db.js                        ← MongoDB connection
+
 ├── middleware/
-│   ├── auth.js               # JWT authentication middleware
-│   └── errorHandler.js       # Centralized error handling
+
+│   ├── auth.js                      ← JWT verification + admin check
+
+│   └── errorHandler.js              ← Global error handler
+
 ├── models/
-│   ├── User.js               # User schema
-│   ├── Course.js             # Course schema
-│   └── ...                   # Other schemas
+
+│   ├── User.js                      ← User schema (auth + profile)
+
+│   ├── Course.js                    ← Courses + embedded lessons
+
+│   ├── Schedule.js                  ← Per-user timetable
+
+│   ├── News.js                      ← Campus news
+
+│   ├── Event.js                     ← Campus events + attendees
+
+│   └── Notification.js              ← Per-user notifications
+
+├── controllers/
+
+│   ├── authController.js            ← Register & Login
+
+│   ├── userController.js            ← Profile CRUD
+
+│   ├── courseController.js          ← Course CRUD + enrollment
+
+│   ├── scheduleController.js        ← Schedule CRUD + bulk
+
+│   ├── newsController.js            ← News CRUD
+
+│   ├── eventController.js           ← Event CRUD + attendance
+
+│   └── notificationController.js    ← Notifications + broadcast
+
 ├── routes/
-│   ├── auth.js               # Authentication routes
-│   ├── users.js              # User routes
-│   ├── courses.js            # Course routes
-│   └── ...                   # Other routes
-├── utils/
-│   └── generateToken.js      # JWT token generation
-├── .env                      # Environment variables (git ignored)
-├── .gitignore                # Git ignore rules
-├── package.json              # Project dependencies
-├── README.md                 # This file
-└── server.js                 # Main server file
+
+│   ├── auth.js
+
+│   ├── users.js
+
+│   ├── courses.js
+
+│   ├── schedule.js
+
+│   ├── news.js
+
+│   ├── events.js
+
+│   └── notifications.js
+
+└── utils/
+
+└── generateToken.js             ← JWT token helper
+
 ```
 
 ---
 
-## 🔌 API Endpoints
+## 🚀 Getting Started
 
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/logout` | Logout user |
-| POST | `/api/auth/refresh-token` | Refresh JWT token |
+### Prerequisites
 
-### Users
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/users/profile` | Get user profile | ✅ |
-| PUT | `/api/users/profile` | Update user profile | ✅ |
-| PUT | `/api/users/password` | Change password | ✅ |
+- [Node.js](https://nodejs.org/) (v18+)
+- [MongoDB](https://www.mongodb.com/) (local or Atlas)
+- [Postman](https://www.postman.com/) (for testing)
 
-### Courses
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/courses` | Get all courses | ✅ |
-| GET | `/api/courses/:id` | Get course details | ✅ |
-| POST | `/api/courses` | Create course (admin) | ✅ |
-| PUT | `/api/courses/:id` | Update course (admin) | ✅ |
-| DELETE | `/api/courses/:id` | Delete course (admin) | ✅ |
-| POST | `/api/courses/:id/enroll` | Enroll in course | ✅ |
+### Installation
 
-### Schedule
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/schedule` | Get user schedule | ✅ |
+```
 
-### News & Events
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/news` | Get news articles | ✅ |
-| GET | `/api/events` | Get events | ✅ |
+# Clone the repository
 
-### Notifications
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/notifications` | Get user notifications | ✅ |
+git clone https://github.com/your-username/unisphere-backend.git
+
+cd unisphere-backend
+
+# Install dependencies
+
+npm install
+
+```
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```
+
+PORT=5001
+
+NODE_ENV=development
+
+MONGO_URI=mongodb://[localhost:27017/unisphere](http://localhost:27017/unisphere)
+
+JWT_SECRET=your_super_secret_key_here
+
+JWT_EXPIRE=30d
+
+```
+
+> For MongoDB Atlas, replace `MONGO_URI` with your cloud connection string.
+
+### Run the Server
+
+```
+
+# Development (with auto-restart)
+
+npm run dev
+
+# Production
+
+npm start
+
+```
+
+You should see:
+
+```
+
+✅ MongoDB Connected: [localhost](http://localhost)
+
+⚡ Server running in development mode on port 5001
+
+📡 http://localhost:5001
+
+```
+
+---
+
+## 🔗 API Endpoints
+
+### 🔐 Authentication
+
+| Method | Endpoint              | Description           | Auth |
+| ------ | --------------------- | --------------------- | ---- |
+| POST   | `/api/auth/register`  | Register a new user   | ❌   |
+| POST   | `/api/auth/login`     | Login & get JWT token | ❌   |
+
+### 👤 User Profile
+
+| Method | Endpoint              | Description                  | Auth |
+| ------ | --------------------- | ---------------------------- | ---- |
+| GET    | `/api/users/profile`  | Get current user profile     | ✅   |
+| PUT    | `/api/users/profile`  | Update profile & preferences | ✅   |
+| PUT    | `/api/users/password` | Change password              | ✅   |
+
+### 📚 Courses
+
+| Method | Endpoint                    | Description               | Auth    |
+| ------ | --------------------------- | ------------------------- | ------- |
+| GET    | `/api/courses`              | List all courses          | ✅      |
+| GET    | `/api/courses/:id`          | Get course detail         | ✅      |
+| POST   | `/api/courses`              | Create course             | ✅ Admin |
+| PUT    | `/api/courses/:id`          | Update course             | ✅ Admin |
+| DELETE | `/api/courses/:id`          | Delete course             | ✅ Admin |
+| POST   | `/api/courses/:id/enroll`   | Enroll in a course        | ✅      |
+| DELETE | `/api/courses/:id/enroll`   | Unenroll from a course    | ✅      |
+
+**Query params:** `?category=Computer Science` • `?enrolled=true`
+
+### 📅 Schedule
+
+| Method | Endpoint              | Description              | Auth |
+| ------ | --------------------- | ------------------------ | ---- |
+| GET    | `/api/schedule`       | Get user's schedule      | ✅   |
+| POST   | `/api/schedule`       | Add schedule entry       | ✅   |
+| POST   | `/api/schedule/bulk`  | Bulk add entries         | ✅   |
+| PUT    | `/api/schedule/:id`   | Update entry             | ✅   |
+| DELETE | `/api/schedule/:id`   | Delete entry             | ✅   |
+
+**Query params:** `?day=Monday`
+
+### 📰 News
+
+| Method | Endpoint         | Description        | Auth    |
+| ------ | ---------------- | ------------------ | ------- |
+| GET    | `/api/news`      | List all news      | ✅      |
+| GET    | `/api/news/:id`  | Get news article   | ✅      |
+| POST   | `/api/news`      | Create news        | ✅ Admin |
+| DELETE | `/api/news/:id`  | Delete news        | ✅ Admin |
+
+**Query params:** `?limit=5`
+
+### 🎉 Events
+
+| Method | Endpoint                    | Description         | Auth    |
+| ------ | --------------------------- | ------------------- | ------- |
+| GET    | `/api/events`               | List all events     | ✅      |
+| GET    | `/api/events/:id`           | Get event detail    | ✅      |
+| POST   | `/api/events`               | Create event        | ✅ Admin |
+| DELETE | `/api/events/:id`           | Delete event        | ✅ Admin |
+| POST   | `/api/events/:id/attend`    | Attend an event     | ✅      |
+| DELETE | `/api/events/:id/attend`    | Unattend an event   | ✅      |
+
+**Query params:** `?limit=3`
+
+### 🔔 Notifications
+
+| Method | Endpoint                          | Description              | Auth    |
+| ------ | --------------------------------- | ------------------------ | ------- |
+| GET    | `/api/notifications`              | Get user notifications   | ✅      |
+| PUT    | `/api/notifications/:id/read`     | Mark as read             | ✅      |
+| PUT    | `/api/notifications/read-all`     | Mark all as read         | ✅      |
+| DELETE | `/api/notifications/:id`          | Delete notification      | ✅      |
+| POST   | `/api/notifications`              | Send to specific user    | ✅ Admin |
+| POST   | `/api/notifications/broadcast`    | Send to all users        | ✅ Admin |
+
+**Query params:** `?unread=true`
 
 ---
 
 ## 🔐 Authentication
 
-The API uses **JWT (JSON Web Tokens)** for authentication.
+The API uses **JWT Bearer tokens**. After login/register, include the token in all protected requests:
 
-### How it works:
-1. User registers or logs in
-2. Server returns a JWT token
-3. Client includes token in request headers: `Authorization: Bearer <token>`
-4. Server verifies token via `protect` middleware
-5. If valid, request continues; if invalid, returns 401 Unauthorized
-
-### Example Request:
-```bash
-curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
-  http://localhost:5001/api/users/profile
 ```
 
----
-
-## 📦 Dependencies
-
-```json
-{
-  "bcryptjs": "^2.4.3",      // Password hashing
-  "cors": "^2.8.5",           // Cross-Origin Resource Sharing
-  "dotenv": "^16.4.5",        // Environment variable management
-  "express": "^4.21.0",       // Web framework
-  "express-validator": "^7.2.0", // Input validation
-  "jsonwebtoken": "^9.0.2",   // JWT authentication
-  "mongoose": "^8.6.0",       // MongoDB ODM
-  "nodemon": "^3.1.4"         // Dev: Auto-reload
-}
-```
-
----
-
-## 🧪 Error Handling
-
-The API returns standardized error responses:
-
-### Success Response (200)
-```json
-{
-  "message": "Operation successful",
-  "data": { /* response data */ }
-}
-```
-
-### Error Response (4xx/5xx)
-```json
-{
-  "message": "Error description",
-  "error": "Detailed error information"
-}
-```
-
-### Common Status Codes
-- **200** - OK
-- **201** - Created
-- **400** - Bad Request (Invalid input)
-- **401** - Unauthorized (Missing/invalid token)
-- **403** - Forbidden (Insufficient permissions)
-- **404** - Not Found
-- **500** - Internal Server Error
-
----
-
-## 🛡️ Security Practices
-
-✅ **Implemented:**
-- JWT token-based authentication
-- Password hashing with bcryptjs (salt rounds: 10)
-- CORS protection
-- Environment variable protection
-- Input validation with express-validator
-- Error messages don't expose sensitive details
-
-⚠️ **Recommended for Production:**
-```javascript
-// Add rate limiting
-npm install express-rate-limit
-
-// Add helmet for security headers
-npm install helmet
-
-// Add request logging
-npm install morgan
-
-// Example usage:
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-
-app.use(helmet());
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-}));
-```
-
----
-
-## 🚀 Deployment
-
-### Deploy to Heroku
-
-```bash
-# Install Heroku CLI
-npm install -g heroku
-
-# Login to Heroku
-heroku login
-
-# Create Heroku app
-heroku create your-app-name
-
-# Set environment variables
-heroku config:set NODE_ENV=production
-heroku config:set JWT_SECRET=your_production_secret
-heroku config:set MONGODB_URI=your_mongodb_uri
-
-# Deploy
-git push heroku main
-```
-
-### Deploy to AWS/DigitalOcean
-1. Add Procfile: `web: npm start`
-2. Ensure MongoDB connection string uses production database
-3. Set all environment variables in hosting platform
-4. Deploy using platform's CLI or Git integration
-
----
-
-## 📝 Usage Examples
-
-### Register a new user
-```bash
-POST http://localhost:5001/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@university.edu",
-  "password": "SecurePass123!",
-  "studentId": "STU123456"
-}
-```
-
-### Login user
-```bash
-POST http://localhost:5001/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@university.edu",
-  "password": "SecurePass123!"
-}
-
-Response:
-{
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "user": {
-    "_id": "...",
-    "name": "John Doe",
-    "email": "john@university.edu"
-  }
-}
-```
-
-### Get user profile (authenticated)
-```bash
-GET http://localhost:5001/api/users/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 
-Response:
-{
-  "_id": "...",
-  "name": "John Doe",
-  "email": "john@university.edu",
-  "studentId": "STU123456",
-  "createdAt": "2024-04-14T10:00:00.000Z"
-}
 ```
+
+### User Roles
+
+| Role      | Permissions                                    |
+| --------- | ---------------------------------------------- |
+| `student` | Read data, manage own profile/schedule, enroll |
+| `admin`   | All student permissions + create/delete content|
 
 ---
 
-## 🐛 Troubleshooting
+## 📊 Data Models
 
-### Connection Error: "Cannot POST /api/courses/course_id"
-**Solution:** Replace `course_id` with an actual MongoDB ObjectId
-```bash
-# Wrong
-GET http://localhost:5001/api/courses/course_id
+### User
+- `name`, `email`, `password` (hashed), `studentId`, `role`
+- `gpa`, `creditsEarned`, `totalCredits`, `yearLevel`
+- `preferences` (push notifications, email notifications, dark mode)
+- `privacy` (profile visible, show email, activity status, data sharing)
 
-# Correct
-GET http://localhost:5001/api/courses/507f1f77bcf86cd799439011
-```
+### Course
+- `name`, `instructor`, `instructorRole`, `credits`, `category`
+- `lessons[]` (number, title, duration, status: completed/current/locked)
+- `resources[]`, `progress` (0.0-1.0), `enrolledStudents[]`
 
-### MongoDB Connection Failed
-1. Check MONGODB_URI in `.env` file
-2. Verify network access in MongoDB Atlas (IP whitelist)
-3. Ensure credentials are correct
-4. Test connection: `mongosh "mongodb+srv://..."`
+### Schedule
+- `user`, `courseName`, `lectureInfo`, `day` (Monday-Sunday)
+- `startTime`, `endTime`, `room`, `teacher`
+- `cardColor`, `textColor` (hex strings for Flutter UI)
 
-### JWT Token Expired
-- The token has expired - user needs to login again
-- Implement token refresh endpoint for better UX
+### News
+- `title`, `description`, `date`, `badgeColor`, `imageUrl`, `author`
 
-### CORS Error
-- Ensure CLIENT_URL is set correctly in `.env`
-- Add your frontend URL to CORS configuration in `server.js`
+### Event
+- `title`, `location`, `date`, `time`, `description`, `imageUrl`
+- `attendees[]`
 
----
-
-## 📚 API Documentation
-
-Full API documentation can be viewed at:
-```
-http://localhost:5001/
-```
-
-This returns available endpoints and their descriptions.
+### Notification
+- `user`, `type` (schedule/announcement/assignment/system)
+- `title`, `description`, `isRead`
 
 ---
 
-## 🔄 Git Workflow
+## ⚙️ Error Handling
 
-```bash
-# Clone repository
-git clone <repo-url>
+The API includes a global error handler that catches:
 
-# Create feature branch
-git checkout -b feature/new-feature
-
-# Make changes and commit
-git add .
-git commit -m "Add new feature"
-
-# Push to remote
-git push origin feature/new-feature
-
-# Create pull request on GitHub
-```
+| Error Type          | Status | Example                        |
+| ------------------- | ------ | ------------------------------ |
+| Invalid MongoDB ID  | 400    | Bad `:id` parameter            |
+| Duplicate Key       | 400    | Email already registered       |
+| Validation Error    | 400    | Missing required fields        |
+| Invalid JWT         | 401    | Malformed or tampered token    |
+| Expired JWT         | 401    | Token past expiration date     |
+| Route Not Found     | 404    | Unknown endpoint               |
+| Server Error        | 500    | Unexpected internal error      |
 
 ---
 
-## 📞 Support & Contact
+## 🧪 Testing
 
-**Author:** Abdelilah Wail NEDJAR
+Use [Postman](https://www.postman.com/) to test all endpoints. Recommended flow:
 
-**Issues:** Report bugs in GitHub Issues section
+1. `POST /api/auth/register` → Create a user
+2. `POST /api/auth/login` → Get your token
+3. Use the token for all subsequent requests
+4. Change role to `admin` in MongoDB for admin endpoints
 
-**Questions:** Check documentation or contact development team
+---
+
+## 📈 Stats
+
+| Metric     | Count |
+| ---------- | ----- |
+| Files      | 28    |
+| Endpoints  | 33    |
+| Models     | 6     |
+| Middleware | 2     |
+
+---
+
+## 👨‍💻 Author
+
+**Abdelilah Wail NEDJAR**
+- University of Constantine 2 — FNTIC
+- Email: abdelilah.nedjar@univ-constantine2.dz
 
 ---
 
 ## 📄 License
 
-ISC License - See LICENSE file for details
+This project is licensed under the ISC License.
+```
 
 ---
 
-## 🚦 API Status
-
-| Component | Status |
-|-----------|--------|
-| Server | ✅ Running |
-| MongoDB | ✅ Connected |
-| Authentication | ✅ Active |
-| Courses API | ✅ Operational |
-| Users API | ✅ Operational |
-| Events API | ✅ Operational |
-
-Last Updated: April 14, 2026
